@@ -1,12 +1,41 @@
 <template>
-  <div class="card">
+  <div
+    class="card"
+    :class="{ disabled: isDisabled }"
+    :style="{
+      height: `${(920 - 16 * 4) / Math.sqrt(cardsContent.length) - 16}px`,
+      width: `${
+        (((920 - 16 * 4) / Math.sqrt(cardsContent.length) - 16) * 3) / 4
+      }px`,
+    }"
+  >
     <div
       class="card__inner"
       :class="{ 'is-flipped': isFlipped }"
       @click="onToggleFlipCard"
     >
       <div class="card__face card__face--front">
-        <div class="card__content"></div>
+        <div
+          class="card__content"
+          :style="{
+            backgroundSize: `${
+              (((920 - 16 * 4) / Math.sqrt(cardsContent.length) - 16) * 3) /
+              4 /
+              3
+            }px
+            ${
+              (((920 - 16 * 4) / Math.sqrt(cardsContent.length) - 16) * 3) /
+              4 /
+              3
+            }px
+            `,
+            perspective: `${
+              ((((920 - 16 * 4) / Math.sqrt(cardsContent.length) - 16) * 3) /
+                4) *
+              2
+            }px`,
+          }"
+        ></div>
       </div>
       <div class="card__face card__face--back">
         <div
@@ -27,25 +56,42 @@ export default {
       type: String,
       require: true,
     },
+    card: {
+      type: [],
+    },
+    cardsContent: {
+      type: Array,
+      default: () => {
+        return [];
+      },
+    },
   },
   data() {
     return {
       isFlipped: false,
+      isDisabled: false,
     };
   },
   methods: {
     onToggleFlipCard() {
+      if (this.isDisabled) return false;
       this.isFlipped = !this.isFlipped;
+      if (this.isFlipped) this.$emit("onFlip", this.card);
+    },
+    onFlipBackCard() {
+      this.isFlipped = false;
+    },
+    onDisabledFlip() {
+      this.isDisabled = true;
     },
   },
 };
 </script>
 <style lang="css" scoped>
 .card {
-  width: 90px;
-  height: 120px;
   display: inline-block;
-  margin: 0 1rem 1rem 0;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
 }
 .card__inner {
   width: 100%;
@@ -56,6 +102,9 @@ export default {
   position: relative;
 }
 
+.card.disabled .card__inner {
+  cursor: default;
+}
 .card__inner.is-flipped {
   transform: rotateY(-180deg);
 }
@@ -73,7 +122,6 @@ export default {
 
 .card__face--front .card__content {
   background: url("../assets/images/icon_back.png") no-repeat center center;
-  background-size: 40px, 40px;
   width: 100%;
   height: 100%;
 }

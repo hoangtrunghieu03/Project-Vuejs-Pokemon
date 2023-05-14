@@ -6,7 +6,7 @@
       <span>4x4</span>
       <span>Easy</span>
     </button>
-    <button @click="onstart(32)">
+    <button @click="onstart(36)">
       <span>6x6</span>
       <span>Normal</span>
     </button>
